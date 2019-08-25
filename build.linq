@@ -27,7 +27,7 @@ void Main()
 		foreach(var srcFile in srcFiles) 
 		{
 			string relativePath = srcFile.Substring(src.Length).TrimStart('\\');
-			string outSrcFile = Path.Combine($@"{outputFilename}\", relativePath);
+			string outSrcFile = Path.Combine($@"{outputFilename}\", relativePath.Replace('\\', '/'));
 			zip.CreateEntryFromFile(srcFile, outSrcFile);
 		}
 	}
@@ -45,4 +45,17 @@ public class Info {
 	[JsonProperty("factorio_version")]
 	public string FactorioVersion { get; set; }
 	public string[] Dependencies { get; set; }
+}
+
+class MyEncoder : UTF8Encoding
+{
+	public MyEncoder()
+	{
+
+	}
+	public override byte[] GetBytes(string s)
+	{
+		s = s.Replace("\\", "/");
+		return base.GetBytes(s);
+	}
 }
