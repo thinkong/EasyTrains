@@ -6,7 +6,7 @@ utils = require 'utils'
 logger = require('__stdlib__/stdlib/misc/logger').new('log', DEBUG_MODE)
 table = require('__stdlib__/stdlib/utils/table')
 RoundRobin = require "classes.RoundRobin"
-Tracker = require "classes.tracker"
+Tracker = require "classes.Tracker"
 
 require 'mod-gui'
 config = require "config"
