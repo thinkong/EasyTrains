@@ -1,0 +1,48 @@
+[FUTURE] group - add group to each type of station, trains will only be used between their groups (so you can stop trains travelling the whole map)
+[FUTURE] add warning if train has been waiting at depot for fuel for 2 mins?
+[FUTURE] add warning if train has been waiting at supplier for configurable timer
+[FUTURE] add warning if train has been waiting at consumer for configurable timer
+[FUTURE] support multiple forces?
+[FUTURE] add timeout to consumer/supplier to add to scheduling?
+[FUTURE] graphics
+[FUTURE] PATTERN MATCH Locomotive / Cargo / Fluid wagons
+[FUTURE] make resource show over train stop on alt mode - this is very hard, "you could maybe place an hidden logistic chest, and change the icon" and "Constant combinator is probably preferable, since it won’t try to connect to the logistic network."
+[FUTURE] make resource show on map?
+[FUTURE] if a train is on the way to the depot but still fairly fueled, just dispatch it from wherever it is?
+[FUTURE] Automatically refresh trainstop gui if it changes?
+[FUTURE] move config defaults to mod settings?
+
+[DONE] make it so you can replace an existing train stop [fast_replaceable_group ?]
+[FIXED] fix dumb bug where resources are done in alphabetical order?
+[DONE] add mod_init for adding mod to an existing save
+[WONT DO] conductor to skip over errored stops
+[FIXED] fix dumb bug where trains are overallocated?
+[DONE] handle train creation / modification / deletion
+[DONE] handle train stops with duplicate names (logic written to error stop in add_train_stop)
+[DONE] we need to track all train stops (even not ours) for duplicate names
+[DONE] handle fluid trains 
+[DONE] handle enabled flag or remove it
+[DONE] some sort of magic for detecting a resource in a train in a depot and sending it somewhere it needs to go
+[DONE] priority system - order by priority, then by lowest number of assigned trains
+[DONE] copy settings when shift click?
+[DONE] round robin to make sure all stops get trains
+[DONE] Only dispatch trains set to automatic
+[DONE] color trains / based on dest stop?
+[DONE] Fix science
+[DONE] Fix material costs
+[DONE] trains gui (listing trains, consumer, destination, location, number of assigned trains to stop, max number of trains?)
+[DONE] train_stop passed to gui needs to be somethign ebtter than what it is
+[DONE] tidy up train stop gui
+[DONE] merge event handlers into events or whatever
+[WONT DO] debug log for a consumer?
+[DONE] add valid checks on all entiteis
+[FIXED] Fix disabling not working
+[DONE] make trains wait at depot until fueled
+[FIXED] copy pasting train stop name didn't give train stop warning
+[NOT BUG] Placing blueprint didn't detect duplicate train stop name - it was just infinity mode breaking
+[NOT BUG] Clicking blueprinted consumer didn't open train stop gui - it was just infinity mode breaking
+[CANT FIX] Adding a depot over the top of where a train is does not seem to add that train to trains_at_depot - Can't detect a train if we place a stop
+[DONE] Automatically refresh overview gui if it changes
+[DONE] fix locale file
+[DONE] Click on train or stop in overview to be taken to it
+[DONE] Removing stop removes from suppliers/consumers/train_stops/gui - this seems fine
