@@ -1,0 +1,1 @@
+mklink /D "%AppData%\Factorio\mods\SamTrain_0.1.1" "D:\Work Files\SamTrain\src"
