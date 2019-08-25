@@ -76,7 +76,7 @@ function Tracker.remove_stop(unit_number, name, type)
             global.conductor.consumer_round_robin:remove(unit_number)
 
             if train_stop.resource then
-                local assigned_trains = global.conductor.train_stops[unit_number].assigned_trains
+                local assigned_trains = train_stop.assigned_trains
                 if assigned_trains > 0 then
                     game.print(
                         string.format(
