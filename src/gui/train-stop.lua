@@ -92,7 +92,7 @@ local function build(player_index)
 
 	local resolution = game.players[player_index].display_resolution
 	main_frame.location = {
-		x = 500,
+		x = 30,
 		y = (resolution.height / 2) - 167
 	}
 
