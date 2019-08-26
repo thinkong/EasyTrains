@@ -21,6 +21,48 @@ function is_train_stop_enabled(train_stop)
 	return true
 end
 
+function get_resource_for_train_stop(train_stop)
+	local entity = train_stop.entity
+
+	if train_stop.resource_type and train_stop.resource then
+		return train_stop.resource_type, train_stop.resource
+	end
+
+	local signals = {}
+	if entity.circuit_connected_entities then
+		if entity.circuit_connected_entities.red then
+			local circuit_network = entity.get_circuit_network(defines.wire_type.red)
+			if circuit_network then
+				for _, signal in pairs(circuit_network.signals) do
+					table.insert(signals, signal)
+				end
+			end
+		end
+
+		if entity.circuit_connected_entities.green then
+			local circuit_network = entity.get_circuit_network(defines.wire_type.green)
+			if circuit_network then
+				for _, signal in pairs(circuit_network.signals) do
+					table.insert(signals, signal)
+				end
+			end
+		end
+
+		local selected_signal
+		for _, signal in pairs(signals) do
+			if selected_signal then
+				return nil
+			end
+
+			selected_signal = signal
+		end
+
+		return selected_signal
+	end
+
+	return nil
+end
+
 function on_train_arrives(event)
 	local train = event.train
 	if train.station == nil then
@@ -112,6 +154,27 @@ local Conductor = {
 	trains_with_resource = {}
 }
 
+function Conductor:build_suppliers()
+	local t = {}
+
+	for _, train_stop in pairs(global.conductor.train_stops) do
+		if train_stop.type == 'supplier' then
+			local resource_type, resource = get_resource_for_train_stop(train_stop)
+			if not resource then goto continue end
+			if not t[resource_type] then t[resource_type] = {} end
+			if not t[resource_type][resource] then t[resource_type][resource] = {} end
+
+			if resource then
+				table.insert(t[resource_type][resource], train_stop.unit_number)
+			end
+
+			::continue::
+		end
+	end
+
+	return t
+end
+
 function Conductor:tick()
     local profiler
     if DEBUG_MODE then
@@ -130,7 +193,7 @@ function Conductor:tick()
 		end
 	else
 		self.consumers = global.conductor.consumers
-		self.suppliers = global.conductor.suppliers
+		self.suppliers = Conductor:build_suppliers()
 		self.empty_trains = empty_trains
 		self.trains_with_resource = trains_with_resource
 
