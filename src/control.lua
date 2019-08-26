@@ -33,10 +33,6 @@ script.on_init(function()
 
     for _, surface in pairs(game.surfaces) do
         local train_stops = surface.find_entities_filtered {type = 'train-stop'}
-
-        for _, entity in pairs(train_stops) do
-            Tracker.add_stop_name(entity)
-        end
     end
 
 	for _, player in pairs(game.players) do
@@ -207,10 +203,6 @@ script.on_event(
         if old_name ~= new_name then
             if event.entity.name == 'train-stop' or string.match(event.entity.name, 'train%-stop%-(.*)') ~= nil then
                 local train_stop = global.conductor.train_stops[event.entity.unit_number]
-
-                Tracker.remove_stop_name(event.entity.unit_number, old_name)
-                Tracker.add_stop_name(event.entity)
-
                 if train_stop ~= nil then
                     train_stop.name = new_name
                 end

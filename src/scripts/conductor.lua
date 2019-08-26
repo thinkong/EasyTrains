@@ -3,7 +3,6 @@ local SupplierSorter = require "classes.SupplierSorter"
 
 global.conductor = {
     train_stops = {},
-    train_stops_by_name = {},
     depots = {},
     consumers = {},
     suppliers = {},
@@ -372,20 +371,22 @@ function Conductor:create_schedule(depot_name, supplier, consumer)
     -- back to depot
     schedule.records[1] = {
         station = depot_name,
-        -- station = train.schedule.records[1].station,
-        -- station = train.station.backer_name,
         wait_conditions = {
             {type = "full", compare_type = "and"} -- just to force the train to wait there indefinitely
         }
     }
     -- to supplier
     schedule.records[2] = {
-        station = supplier.name,
+        --station = supplier.name,
+		-- if we use rail instead of station we don't require unique names
+		rail = supplier.entity.connected_rail,
         wait_conditions = {{type = "full", compare_type = "and"}}
     }
     -- to consumer
     schedule.records[3] = {
-        station = consumer.name,
+        --station = consumer.name,
+		-- if we use rail instead of station we don't require unique names
+		rail = consumer.entity.connected_rail,
         wait_conditions = {{type = "empty", compare_type = "and"}}
     }
     return schedule

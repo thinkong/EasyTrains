@@ -3,21 +3,6 @@ local Tracker = {}
 -- local cache to catch deleting a train then it being used to create a new train, doesn't need to be saved
 Tracker.deleted_trains = {}
 
-function Tracker.is_stop_name_in_use(name)
-    local name_in_use = false
-    if global.conductor.train_stops_by_name[name] ~= nil then
-        -- if any of the other stops are not depots this is a problem
-        for _, unit_number in pairs(global.conductor.train_stops_by_name[name]) do
-            local train_stop = global.conductor.train_stops[unit_number]
-            if train_stop == nil or train_stop.type ~= 'depot' then
-                name_in_use = true
-                break
-            end
-        end
-    end
-    return name_in_use
-end
-
 function Tracker.add_stop(entity)
 	local train_stop_type = string.match(entity.name, 'train%-stop%-(.*)')
 
@@ -50,8 +35,6 @@ function Tracker.add_stop(entity)
 
 		Tracker.add_data_entity(entity)
     end
-
-     Tracker.add_stop_name(entity)
 end
 
 
@@ -155,18 +138,6 @@ function Tracker.remove_data_entity(stop)
 	stop.data_entity = nil
 end
 
-function Tracker.add_stop_name(entity)
-	local train_stop_type = string.match(entity.name, 'train%-stop%-(.*)')
-	
-	if train_stop_type and train_stop_type ~= 'depot' then
-        if Tracker.is_stop_name_in_use(entity.backer_name) then
-            game.print( 'Train stop name ' .. entity.backer_name .. ' already in use. Stops with this name will not be used until this is resolved.' )
-        end
-    end
-
-	utils.add_to_list_of_lists(global.conductor.train_stops_by_name, entity.backer_name, entity.unit_number)
-end
-
 function Tracker.remove_stop(unit_number, name, type)
     local train_stop = global.conductor.train_stops[unit_number]
     if train_stop ~= nil then
@@ -218,13 +189,7 @@ function Tracker.remove_stop(unit_number, name, type)
             end
         end
     end
-    Tracker.remove_stop_name(unit_number, name)
 end
-
-function Tracker.remove_stop_name(unit_number, name)
-    utils.remove_from_list_of_lists(global.conductor.train_stops_by_name, name, unit_number)
-end
-
 
 function Tracker.add_train(train)
     local size = table_size(train.carriages)
