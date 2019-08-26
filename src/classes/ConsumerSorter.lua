@@ -22,7 +22,7 @@ function ConsumerSorter:new(consumers, empty_trains, trains_with_resource)
 			local consumer = global.conductor.train_stops[consumer_unit_number]
 			if #global.conductor.train_stops_by_name[consumer.name] ~= 1 then
 			  logger(string.format("Consumer stop %s has duplicate stops and will be ignored", consumer.name))
-			elseif not consumer.enabled then
+			elseif not is_train_stop_enabled(consumer) then
 			  if DEBUG_MODE then
 				logger(string.format("Consumer stop %s is disabled", consumer.name))
 			  end

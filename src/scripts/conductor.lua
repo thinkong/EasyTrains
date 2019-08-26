@@ -13,6 +13,15 @@ global.conductor = {
 	need_to_refresh = false
 }
 
+function is_train_stop_enabled(train_stop)
+	if not train_stop.enabled then return false end
+	local control_behavior = train_stop.entity.get_control_behavior()
+	if control_behavior and control_behavior.enable_disable and control_behavior.disabled then
+		return false
+	end
+	return true
+end
+
 function on_train_arrives(event)
 	local train = event.train
 	if train.station == nil then

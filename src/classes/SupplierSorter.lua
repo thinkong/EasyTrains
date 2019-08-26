@@ -12,7 +12,7 @@ function SupplierSorter:new(resource_suppliers)
 
     if #global.conductor.train_stops_by_name[supplier.name] ~= 1 then
       logger(string.format("Supplier stop %s has duplicate stops and will be ignored", supplier.name))
-    elseif not supplier.enabled then
+	elseif not is_train_stop_enabled(supplier) then
       if DEBUG_MODE then
         logger(string.format("Supplier stop %s is disabled", supplier.name))
       end
