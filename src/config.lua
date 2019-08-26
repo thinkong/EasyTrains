@@ -31,7 +31,24 @@ local config = {
         type = "text",
         default = 6,
         tooltip = {"samtrain.max_length_tooltip"}
-    }
+    },
+	["timeout"] = {
+		type = "slider",
+		default = 120,
+		tooltip = {"samtrain.timeout_tooltip"},
+		exclude = {"depot"},
+		enable_disable = true,
+		options = {
+			minimum_value = 1,
+			maximum_value = 120,
+		}
+	},
+	["count"] = {
+		type = "text",
+		default = nil,
+		exclude = {"depot", "supplier"},
+		enable_disable = true
+	}
 }
 
 for name, data in pairs(config) do
