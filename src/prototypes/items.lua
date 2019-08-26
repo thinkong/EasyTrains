@@ -10,10 +10,23 @@ local consumer = clone("train-stop", "item", "train-stop-consumer")
 consumer.icon = "__SamTrain__/graphics/icons/consumer.png"
 consumer.order = consumer.order .. "-c"
 
+local st_data_entity = {
+	name = "st-data-entity",
+	type = "item",
+	icon = "__core__/graphics/empty.png",
+	flags = { "hidden" },
+	subgroup = "circuit-network",
+	place_result = "st-data-entity",
+	order = "b[combinators]-c[st-data-entity]",
+	stack_size = 16384,
+	icon_size = 1
+}
+
 data:extend(
     {
         depot,
         supplier,
-        consumer
+        consumer,
+		st_data_entity
     }
 )

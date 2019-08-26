@@ -49,6 +49,8 @@ local function update_value(player_index, name, value)
     else
         train_stop[name] = value
     end
+
+	Tracker.update_data_entity(train_stop)
 end
 
 local function text_changed(event)

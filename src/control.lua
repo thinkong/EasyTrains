@@ -3,7 +3,7 @@ global = global or {}
 global.gui = global.gui or {}
 
 utils = require 'utils'
-logger = require('__stdlib__/stdlib/misc/logger').new('log', DEBUG_MODE)
+logger = require('__stdlib__/stdlib/misc/logger').new('log', true)
 table = require('__stdlib__/stdlib/utils/table')
 RoundRobin = require "classes.RoundRobin"
 Tracker = require "classes.Tracker"
@@ -35,8 +35,7 @@ script.on_init(function()
         local train_stops = surface.find_entities_filtered {type = 'train-stop'}
 
         for _, entity in pairs(train_stops) do
-            local train_stop_type = string.match(entity.name, 'train%-stop%-(.*)')
-            Tracker.add_stop(entity)
+            Tracker.add_stop_name(entity)
         end
     end
 
@@ -64,6 +63,8 @@ script.on_event(
 
         if entity.name == 'train-stop' or train_stop_type ~= nil then
             Tracker.add_stop(entity)
+		elseif entity.name == 'st-data-entity' then
+			Tracker.add_data_entity(entity)
         end
     end
 )
