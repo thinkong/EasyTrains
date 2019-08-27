@@ -40,9 +40,11 @@ end
 
 local function get_config_table(train_stop)
 	local t = {}
+
 	for configName, _ in pairs(config) do
         t[configName] = train_stop[configName]
     end
+	t.enabled = false
 	t.resource_type = train_stop.resource_type
 	return t
 end
@@ -83,6 +85,7 @@ function Tracker.add_data_entity(entity)
 	local train_stop
 
 	if entity.name == 'train-stop-depot' or entity.name == 'train-stop-supplier' or entity.name == 'train-stop-consumer' then
+
 		if data_entity then
 			Tracker.update_train_stop(entity, existing_data_entity)
 		else
@@ -98,23 +101,44 @@ function Tracker.add_data_entity(entity)
 			train_stop.data_entity = data_entity
 		end
 	elseif entity.name == 'st-data-entity' then
-		if not data_entity then return end
-
 		local train_stop_entity = get_existing_train_stop(entity)
-		train_stop = global.conductor.train_stops[train_stop_entity.unit_number]
 
-		Tracker.update_train_stop(train_stop, entity)
+		if train_stop_entity then
+			train_stop = global.conductor.train_stops[train_stop_entity.unit_number]
+
+			if data_entity then
+				data_entity.destroy()
+				train_stop.data_entity = nil
+			end
+
+			Tracker.update_train_stop(train_stop, entity)
+			train_stop.data_entity = entity
+		end
 	end
 
-	Tracker.update_data_entity(train_stop)
+	if train_stop then
+		Tracker.update_data_entity(train_stop)
+	end
+	return entity
 end
 
 function Tracker.update_data_entity(stop)
-	local data_entity = stop.data_entity
-	if not data_entity then return end
+	local train_stop = global.conductor.train_stops[stop.unit_number]
+	
+	if not train_stop then return end
+
+	local data_entity = train_stop.data_entity
+	if data_entity and not data_entity.valid then
+		train_stop.data_entity = nil
+		data_entity = nil
+	end
+
+	if not data_entity then 
+		data_entity = Tracker.add_data_entity(stop)
+	end
 
 	data_entity.alert_parameters = {
-		alert_message = game.table_to_json(get_config_table(stop)),
+		alert_message = game.table_to_json(get_config_table(train_stop)),
 		show_alert = false,
 		show_on_map = false
 	}
@@ -127,8 +151,6 @@ function Tracker.update_train_stop(stop, data_entity)
 	for key, value in pairs(t) do
 		stop[key] = value
 	end
-	t.enabled = false
-	t.resource_type = stop.resource_type
 end
 
 function Tracker.remove_data_entity(stop)
@@ -160,12 +182,6 @@ function Tracker.remove_stop(unit_number, name, type)
                         )
                     )
                 end
-                utils.remove_from_list_of_lists_of_lists(
-                    global.conductor.consumers,
-                    train_stop.resource_type,
-                    train_stop.resource,
-                    unit_number
-                )
             end
         elseif type == 'supplier' then
             global.conductor.supplier_round_robin:remove(unit_number)
@@ -180,12 +196,6 @@ function Tracker.remove_stop(unit_number, name, type)
                         )
                     )
                 end
-                utils.remove_from_list_of_lists_of_lists(
-                    global.conductor.suppliers,
-                    train_stop.resource_type,
-                    train_stop.resource,
-                    unit_number
-                )
             end
         end
     end

@@ -3,7 +3,7 @@ global = global or {}
 global.gui = global.gui or {}
 
 utils = require 'utils'
-logger = require('__stdlib__/stdlib/misc/logger').new('log', true)
+logger = require('__stdlib__/stdlib/misc/logger').new('log', false)
 table = require('__stdlib__/stdlib/utils/table')
 RoundRobin = require "classes.RoundRobin"
 Tracker = require "classes.Tracker"
@@ -224,11 +224,6 @@ script.on_event(
             local source_train_stop = global.conductor.train_stops[event.source.unit_number]
             local dest_train_stop = global.conductor.train_stops[event.destination.unit_number]
 
-			if dest_train_stop.resource then
-				utils.remove_from_list_of_lists(global.conductor.suppliers, dest_train_stop.resource_type, dest_train_stop.resource, dest_train_stop.unit_number)
-				utils.remove_from_list_of_lists(global.conductor.consumers, dest_train_stop.resource_type, dest_train_stop.resource, dest_train_stop.unit_number)
-			end
-
             if source_train_stop and dest_train_stop then
                 dest_train_stop.resource = source_train_stop.resource
                 dest_train_stop.resource_type = source_train_stop.resource_type
@@ -236,14 +231,6 @@ script.on_event(
                 dest_train_stop.max_number_of_trains = source_train_stop.max_number_of_trains
                 dest_train_stop.min_length = source_train_stop.min_length
                 dest_train_stop.max_length = source_train_stop.max_length
-
-				if dest_train_stop.resource then
-					if dest_train_stop_type == 'consumer' then
-						utils.add_to_list_of_lists_of_lists(global.conductor.consumers, dest_train_stop.resource_type, dest_train_stop.resource, dest_train_stop.unit_number)
-					elseif dest_train_stop_type == 'supplier' then
-						utils.add_to_list_of_lists_of_lists(global.conductor.suppliers, dest_train_stop.resource_type, dest_train_stop.resource, dest_train_stop.unit_number)
-					end
-				end
             end
         end
     end
