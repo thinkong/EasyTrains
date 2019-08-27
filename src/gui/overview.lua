@@ -31,6 +31,8 @@ local function build_trains_tab_content(tbl_trains)
     }
 
     for _, train in pairs(global.conductor.trains) do
+		if not train.depot_name then goto continue end
+
         local label_type =
             tbl_trains.add {
             type = "sprite"
@@ -70,6 +72,8 @@ local function build_trains_tab_content(tbl_trains)
             type = "label",
             caption = tostring(train.size)
         }
+
+		::continue::
     end
 
 	return tbl_trains
