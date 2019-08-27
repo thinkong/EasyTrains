@@ -88,13 +88,27 @@ local function build(player_index)
     }
     table_frame.style.horizontally_stretchable = true
 
-    local table = table_frame.add {type = "table", column_count = 2}
+    local table = table_frame.add {type = "table", column_count = 3}
     table.style.cell_padding = 2
     table.style.horizontally_stretchable = true
 
+	local enable_disable = {}
     local fields = {}
     local labels = {}
     for name, data in pairs(config) do
+		logger('data: ' .. serpent.line(data))
+		local field_enabled
+
+		if data.enable_disable == true then
+			field_enabled  = table.add {
+				type = "checkbox",
+				name = name .. "-field-enabled-checkbox",
+				state = false
+			}
+		else
+			field_enabled = table.add { type = "label" }
+		end
+
         local caption
         if data.tooltip ~= nil then
             caption = {"", {"samtrain." .. name}, "", " [img=info]"}
@@ -134,7 +148,15 @@ local function build(player_index)
                 name = name .. "-checkbox",
                 state = false
             }
+		elseif data.type == "slider" then
+			field = table.add {
+				type = "slider",
+				name = name .. "-slider",
+				minimum_value = data.options.minimum_value,
+				maximum_value = data.options.maximum_value
+			}
         end
+		enable_disable[name] = field_enabled
         labels[name] = label
         fields[name] = field
     end
@@ -146,6 +168,7 @@ local function build(player_index)
     global.gui[player_index].train_stop = {
         window = main_frame,
         table_frame = table_frame,
+		enable_disable = enable_disable,
         labels = labels,
         fields = fields,
 		train_stop = nil
@@ -178,6 +201,8 @@ local function update(player_index, train_stop)
 		end
 
 		local visible = data.exclude == nil or not data.exclude:has(train_stop.type) or false
+		logger('wat' .. serpent.line(gui.enable_disable))
+		gui.enable_disable[name].visible = visible
 		gui.labels[name].visible = visible
 		gui.fields[name].visible = visible
 	end
