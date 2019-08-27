@@ -4,44 +4,12 @@ local function update_value(player_index, name, value)
     if name == "resource" then
         local current_resource_type = train_stop.resource_type
         local current_resource = train_stop.resource
-        if current_resource ~= nil then
-            if train_stop.type == "consumer" then
-                utils.remove_from_list_of_lists_of_lists(
-                    global.conductor.consumers,
-                    current_resource_type,
-                    current_resource,
-                    train_stop.unit_number
-                )
-            elseif train_stop.type == "supplier" then
-                utils.remove_from_list_of_lists_of_lists(
-                    global.conductor.suppliers,
-                    current_resource_type,
-                    current_resource,
-                    train_stop.unit_number
-                )
-            end
-        end
 
         if value ~= nil then
             local resource_type = value.type
             local resource = value.name
             train_stop.resource_type = resource_type
             train_stop.resource = resource
-            if train_stop.type == "consumer" then
-                utils.add_to_list_of_lists_of_lists(
-                    global.conductor.consumers,
-                    resource_type,
-                    resource,
-                    train_stop.unit_number
-                )
-            elseif train_stop.type == "supplier" then
-                utils.add_to_list_of_lists_of_lists(
-                    global.conductor.suppliers,
-                    resource_type,
-                    resource,
-                    train_stop.unit_number
-                )
-            end
         else
             train_stop.resource_type = nil
             train_stop.resource = nil
@@ -50,7 +18,7 @@ local function update_value(player_index, name, value)
         train_stop[name] = value
     end
 
-	Tracker.update_data_entity(train_stop)
+	Tracker.update_data_entity(train_stop.entity)
 end
 
 local function text_changed(event)

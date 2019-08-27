@@ -4,8 +4,6 @@ local SupplierSorter = require "classes.SupplierSorter"
 global.conductor = {
     train_stops = {},
     depots = {},
-    consumers = {},
-    suppliers = {},
     trains = {},
     trains_at_depot = {},
     trains_by_type = {},
@@ -65,23 +63,35 @@ end
 
 function on_train_arrives(event)
 	local train = event.train
-	if train.station == nil then
-		return
-	end
-    if DEBUG_MODE then
-        logger(string.format("train %d has arrived at %s", train.id, train.station.backer_name))
-    end
-
+	
     if global.conductor.trains[train.id] == nil then
         Tracker.add_train(train)
     end
-
     local train_data = global.conductor.trains[train.id]
-    if train.station.name == "train-stop-depot" then
+
+	local scheduled_rail
+	if train.schedule and train.schedule.records and train.schedule.records[train.schedule.current] and train.schedule.records[train.schedule.current].rail then
+		scheduled_rail = train.schedule.records[train.schedule.current].rail
+	end
+	
+	local station
+	if train.station then 
+		station = train.station
+	elseif train_data.consumer ~= nil and train_data.consumer.entity.valid and train_data.consumer.entity.connected_rail == scheduled_rail then
+		station = train_data.consumer.entity
+    elseif train_data.supplier ~= nil and train_data.supplier.entity.valid and train_data.supplier.entity.connected_rail == scheduled_rail then
+		station = train_data.supplier.entity
+    end
+
+	if station == nil then
+		return
+	end
+
+    if station.name == "train-stop-depot" then
         if DEBUG_MODE then
             logger("train has arrived at depot, resetting")
         end
-        train_data.depot_name = train.station.backer_name
+        train_data.depot_name = station.backer_name
         train_data.location = "depot"
 
         utils.add_to_list_of_lists_of_lists(
@@ -92,7 +102,7 @@ function on_train_arrives(event)
         )
 
         local schedule = {current = 1, records = {}}
-        schedule.records[1] = {station = train.station.backer_name}
+        schedule.records[1] = {station = station.backer_name}
         train.schedule = schedule
 
         if train_data.mission ~= nil then
@@ -111,22 +121,26 @@ function on_train_arrives(event)
 			utils.remove_from_list(train_data.supplier.trains, train.id)
 			train_data.supplier = nil
 		end
-    end
-
-    if train.station.name == "train-stop-consumer" and train_data.consumer ~= nil then
+	elseif station.name == 'train-stop-consumer' and train_data.consumer ~= nil then
         train_data.location = "consumer"
-    end
-
-    if train.station.name == "train-stop-supplier" and train_data.supplier ~= nil then
+    elseif station.name == 'train-stop-supplier' and train_data.supplier ~= nil then
         train_data.location = "supplier"
     end
+
+	if DEBUG_MODE  then
+        logger(string.format("train %d has arrived at %s", train.id, station.backer_name))
+    end
+
+	if DEBUG_MODE then
+		logger('train location is now: ' .. (train_data.location or 'nil'))
+	end
 end
 
 function on_train_leaves(event)
 	local train = event.train
     local train_data = global.conductor.trains[train.id]
     if train_data ~= nil then
-        if DEBUG_MODE then
+        if DEBUG_MODE  then
             logger(string.format("train %d leaving station %s", train.id, train_data.location))
         end
 
@@ -154,11 +168,36 @@ local Conductor = {
 	trains_with_resource = {}
 }
 
+function Conductor:build_consumers()
+	local t = {}
+
+	for _, train_stop in pairs(global.conductor.train_stops) do
+		if train_stop.type == 'consumer' then
+			if not train_stop.entity or not train_stop.entity.valid or not train_stop.entity.connected_rail then goto continue end
+			local resource_type = train_stop.resource_type
+			local resource = train_stop.resource
+
+			if not resource then goto continue end
+			if not t[resource_type] then t[resource_type] = {} end
+			if not t[resource_type][resource] then t[resource_type][resource] = {} end
+
+			if resource then
+				table.insert(t[resource_type][resource], train_stop.unit_number)
+			end
+
+			::continue::
+		end
+	end
+
+	return t
+end
+
 function Conductor:build_suppliers()
 	local t = {}
 
 	for _, train_stop in pairs(global.conductor.train_stops) do
 		if train_stop.type == 'supplier' then
+			if not train_stop.entity or not train_stop.entity.valid or not train_stop.entity.connected_rail then goto continue end
 			local resource_type, resource = get_resource_for_train_stop(train_stop)
 			if not resource then goto continue end
 			if not t[resource_type] then t[resource_type] = {} end
@@ -192,7 +231,7 @@ function Conductor:tick()
 			logger('skipping tick as no available trains')
 		end
 	else
-		self.consumers = global.conductor.consumers
+		self.consumers = Conductor:build_consumers()
 		self.suppliers = Conductor:build_suppliers()
 		self.empty_trains = empty_trains
 		self.trains_with_resource = trains_with_resource
@@ -495,6 +534,11 @@ function Conductor:cleanup()
 	for index, train_stop in pairs(global.conductor.train_stops) do
 		if train_stop.entity == nil or not train_stop.entity.valid then
 			logger('invalid train stop, removing' .. serpent.line(train_stop))
+
+			if train_stop.data_entity and train_stop.data_entity.valid then
+				train_stop.data_entity.destroy()
+			end
+
 			global.conductor.train_stops[index] = nil
 		end
 
@@ -517,27 +561,6 @@ function Conductor:cleanup()
 	utils.cleanup_list_of_lists(global.conductor.trains_by_type, function (item)
 		return global.conductor.trains[item] ~= nil
 	end)
-
-
-	for resource_type, resources in pairs(global.conductor.consumers) do
-		for resource, resource_consumers in pairs(resources) do
-			for index, consumer in pairs(resource_consumers) do
-				if global.conductor.train_stops[consumer] == nil then
-					global.conductor.consumers[resource_type][resource][index] = nil
-				end
-			end
-		end
-	end
-
-	for resource_type, resources in pairs(global.conductor.suppliers) do
-		for resource, resource_suppliers in pairs(resources) do
-			for index, supplier in pairs(resource_suppliers) do
-				if global.conductor.train_stops[supplier] == nil then
-					global.conductor.suppliers[resource_type][resource][index] = nil
-				end
-			end
-		end
-	end
 
 	if global.conductor.consumer_round_robin then
 		for _, value in pairs(global.conductor.consumer_round_robin:get()) do
