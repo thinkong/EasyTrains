@@ -1,13 +1,13 @@
 local depot = clone("train-stop", "item", "train-stop-depot")
-depot.icon = "__SamTrain__/graphics/icons/depot.png"
+depot.icon = "__SamTrain__/graphics/icons/train-stop-depot.png"
 depot.order = "a[train-system]-c[train-stop]-d[train-stop-depot]"
 
 local supplier = clone("train-stop", "item", "train-stop-supplier")
-supplier.icon = "__SamTrain__/graphics/icons/supplier.png"
+supplier.icon = "__SamTrain__/graphics/icons/train-stop-supplier.png"
 supplier.order = "a[train-system]-c[train-stop]-e[train-stop-depot]"
 
 local consumer = clone("train-stop", "item", "train-stop-consumer")
-consumer.icon = "__SamTrain__/graphics/icons/consumer.png"
+consumer.icon = "__SamTrain__/graphics/icons/train-stop-consumer.png"
 consumer.order = "a[train-system]-c[train-stop]-f[train-stop-consumer]"
 
 local st_data_entity = {
