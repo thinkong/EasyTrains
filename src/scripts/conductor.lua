@@ -647,7 +647,7 @@ script.on_event(defines.events.on_tick, function(event)
 
 			if train_stop and train_stop.warning_timeout_enable_disable and train_stop.warning_timeout and train_stop.entity.valid then
 				local time_in_seconds = train_stop.warning_timeout
-				game.print('Warning, a train has been waiting at station [' .. train_stop.name  ..']  for ' .. time_in_seconds .. ' seconds')
+				game.print({"train_waiting_warning", train_stop.name, time_in_seconds})
 			end
 		end
 		global.conductor.tick_alarms[game.tick] = nil

@@ -235,7 +235,6 @@ local function show(player_index, train_stop)
 	build(player_index)
 	
 	if not train_stop then
-		game.print('no train_stop')
 		return
 	end
 	update(player_index, train_stop)

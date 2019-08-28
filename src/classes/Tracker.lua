@@ -216,12 +216,7 @@ function Tracker.remove_stop(unit_number, name, type)
             if train_stop.resource then
                 local assigned_trains = train_stop.assigned_trains
                 if assigned_trains > 0 then
-                    game.print(
-                        string.format(
-                            'Deleted train stop has %d assigned trains, bad things might happen',
-                            assigned_trains
-                        )
-                    )
+                    game.print({"deleted_train_stop_warning", assigned_trains})
                 end
             end
         elseif type == 'supplier' then
@@ -230,12 +225,7 @@ function Tracker.remove_stop(unit_number, name, type)
             if train_stop.resource then
                 local assigned_trains = train_stop.assigned_trains
                 if assigned_trains > 0 then
-                    game.print(
-                        string.format(
-                            'Deleted train stop has %d assigned trains, bad things might happen',
-                            assigned_trains
-                        )
-                    )
+                    game.print({"deleted_train_stop_warning", assigned_trains})
                 end
             end
         end
