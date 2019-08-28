@@ -2,12 +2,15 @@
 A simple, easy-to-use, no circuits required train scheduler for people who just want their trains to work. 
 
 **Adds 3 different train stops to the game:**
-*Depot*: a place for your trains to fuel and wait for their next task
+*Depot*: a place for your trains to fuel and wait for their next task\
 ![Depot](https://i.ibb.co/V9cF1g2/depot.png)
-*Supplier*: a stop that has and can supply a resource
+\
+*Supplier*: a stop that has and can supply a resource\
 ![Supplier](https://i.ibb.co/SrqmVkY/supplier.png)
-*Consumer*: a stop that wants a resource
+\
+*Consumer*: a stop that wants a resource\
 ![Consumer](https://i.ibb.co/tLpR7rr/consumer.png)
+
 
 ---
 ### Change log
