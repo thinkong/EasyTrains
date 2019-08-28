@@ -15,7 +15,7 @@ A simple, easy-to-use, no circuits required train scheduler for people who just 
 
 ---
 ### Change log
-** 0.17 **
+**0.17**
 - Update the icon and entity graphics. These are still temporary graphics, just slightly better.
 - Reorder the train stop icons to be depot, supplier, consumer
 - Fix priority tooltip not working
@@ -25,17 +25,17 @@ A simple, easy-to-use, no circuits required train scheduler for people who just 
 - Fix st-data-entity not having a name
 - Hide trains without a depot name from the overview list
 
-** 0.16 **
+**0.16**
 - Fix blueprinting not properly copying settings
 - Fix trains not dispatching from the depot until another train has arrived at the depot
 
-** 0.1.5 **
+**0.1.5**
 - Allow train stop names to not be unique.
 - Allow train stops to be blueprinted.
 - Allow signals to specify the resource on a train stop.
 - Allow disabling train stop by circuit.
 
-** 0.1.4 **
+**0.1.4**
 - Fix case sensitivity issue for linux/mac
 
 ---
