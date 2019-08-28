@@ -63,6 +63,7 @@ local config = {
 		type = "slider",
 		default = 120,
 		tooltip = {"samtrain.warning_timeout_toolip"},
+		exclude = {"depot"},
 		enable_disable = true,
 		options = {
 			minimum_value = 1,
