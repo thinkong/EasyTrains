@@ -16,10 +16,13 @@ function Tracker.add_stop(entity)
         stop.assigned_trains = 0
         stop.trains = {}
 		stop.entity = entity
-        -- stop.error = false
 
         for configName, configData in pairs(config) do
             stop[configName] = configData.default
+
+			if configData.enable_disable then
+				stop[configName .. "_enable_disable"] = false
+			end
         end
 
         global.conductor.train_stops[entity.unit_number] = stop
@@ -36,19 +39,6 @@ function Tracker.add_stop(entity)
 		Tracker.add_data_entity(entity)
     end
 end
-
-
-local function get_config_table(train_stop)
-	local t = {}
-
-	for configName, _ in pairs(config) do
-        t[configName] = train_stop[configName]
-    end
-	t.enabled = false
-	t.resource_type = train_stop.resource_type
-	return t
-end
-
 
 local function get_existing_data_entity(parent_entity)
   local entities = parent_entity.surface.find_entities_filtered({
@@ -87,7 +77,7 @@ function Tracker.add_data_entity(entity)
 	if entity.name == 'train-stop-depot' or entity.name == 'train-stop-supplier' or entity.name == 'train-stop-consumer' then
 
 		if data_entity then
-			Tracker.update_train_stop(entity, existing_data_entity)
+			Tracker.update_train_stop(existing_data_entity, entity)
 		else
 			data_entity = entity.surface.create_entity({
 				name = 'st-data-entity',
@@ -111,7 +101,7 @@ function Tracker.add_data_entity(entity)
 				train_stop.data_entity = nil
 			end
 
-			Tracker.update_train_stop(train_stop, entity)
+			Tracker.update_train_stop(entity, train_stop)
 			train_stop.data_entity = entity
 		end
 	end
@@ -120,6 +110,56 @@ function Tracker.add_data_entity(entity)
 		Tracker.update_data_entity(train_stop)
 	end
 	return entity
+end
+
+function encode(train_stop)
+	local t = {}
+	t.rt = train_stop.resource_type
+
+	for configName, configData in pairs(config) do
+		if configName ~= 'enabled' and train_stop[configName] and (configData.exclude == nil or  not configData.exclude:has(train_stop.type)) then
+			t[configData.short_name] = train_stop[configName]
+
+			if configData.enable_disable then
+				t['_' .. configData.short_name] = train_stop[configName .. "_enable_disable"]
+			end
+		end
+	end
+
+	-- 0 for version
+	return '0' .. game.table_to_json(t)
+end
+
+function decode(data_entity, train_stop)
+	local alert_message = data_entity.alert_parameters.alert_message
+	local version = alert_message:sub(1,1)
+	local t
+
+	if version ~= '0' then
+		t = game.json_to_table(alert_message)
+	else
+		local mapping_table = {}
+
+		mapping_table['rt'] = 'resource_type'
+		for configName, configData in pairs(config) do
+			mapping_table[configData.short_name] = configName
+			if configData.enable_disable then
+				mapping_table['_' .. configData.short_name] = configName .. "_enable_disable"
+			end
+		end
+
+		local json = alert_message:sub(2)
+		local encoded_t = game.json_to_table(json)
+
+		t = {}
+		for key, value in pairs(encoded_t) do
+			t[mapping_table[key]] = value
+		end
+	end
+
+	for key, value in pairs(t) do
+		train_stop[key] = value
+	end
 end
 
 function Tracker.update_data_entity(stop)
@@ -137,20 +177,17 @@ function Tracker.update_data_entity(stop)
 		data_entity = Tracker.add_data_entity(stop)
 	end
 
+	local encoded = encode(train_stop)
+
 	data_entity.alert_parameters = {
-		alert_message = game.table_to_json(get_config_table(train_stop)),
+		alert_message = encoded,
 		show_alert = false,
 		show_on_map = false
 	}
 end
 
-function Tracker.update_train_stop(stop, data_entity)
-	local json = data_entity.alert_parameters.alert_message
-	local t = game.json_to_table(json)
-
-	for key, value in pairs(t) do
-		stop[key] = value
-	end
+function Tracker.update_train_stop(data_entity, train_stop)
+	decode(data_entity, train_stop)
 end
 
 function Tracker.remove_data_entity(stop)

@@ -1,38 +1,45 @@
 local string_array = require("__stdlib__/stdlib/utils/classes/string_array")
 local config = {
     ["enabled"] = {
+		short_name = "e",
         type = "checkbox",
         default = false,
         exclude = {"depot"}
     },
     ["resource"] = {
+		short_name = "r",
         type = "element",
         default = nil,
         exclude = {"depot"}
     },
     ["priority"] = {
+		short_name = "p",
         type = "text",
         default = 100,
         exclude = {"depot"},
         tooltip = {"samtrain.priority_tooltip"}
     },
     ["max_number_of_trains"] = {
+		short_name = "t",
         type = "text",
         default = 1,
         exclude = {"depot"},
         tooltip = {"samtrain.max_number_of_trains_tooltip"}
     },
     ["min_length"] = {
+		short_name = "min",
         type = "text",
         default = 2,
         tooltip = {"samtrain.min_length_tooltip"}
     },
     ["max_length"] = {
+		short_name = "max",
         type = "text",
         default = 6,
         tooltip = {"samtrain.max_length_tooltip"}
     },
 	["timeout"] = {
+		short_name = "to",
 		type = "slider",
 		default = 120,
 		tooltip = {"samtrain.timeout_tooltip"},
