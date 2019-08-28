@@ -206,6 +206,14 @@ script.on_event(
                 if train_stop ~= nil then
                     train_stop.name = new_name
                 end
+
+				if event.entity.name == 'train-stop-depot' then
+					for _, train in pairs(global.conductor.trains) do
+						if train.depot_name == old_name then
+							train.depot_name = new_name
+						end
+					end
+				end
             end
         end
     end
