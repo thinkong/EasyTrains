@@ -1,4 +1,4 @@
-local ConsumerSorter = require "classes.ConsumerSorter"
+﻿local ConsumerSorter = require "classes.ConsumerSorter"
 local SupplierSorter = require "classes.SupplierSorter"
 
 global.conductor = {
@@ -7,6 +7,7 @@ global.conductor = {
     trains = {},
     trains_at_depot = {},
     trains_by_type = {},
+	tick_alarms = {},
 	need_to_refresh = false
 }
 
@@ -123,8 +124,18 @@ function on_train_arrives(event)
 		end
 	elseif station.name == 'train-stop-consumer' and train_data.consumer ~= nil then
         train_data.location = "consumer"
+		if train_data.consumer.warning_timeout_enable_disable then
+			local tick = game.tick + (train_data.consumer.warning_timeout * 60)
+			train_data.consumer.tick_alarm = tick
+			utils.add_to_list_of_lists(global.conductor.tick_alarms, tick, train_data.consumer.unit_number)
+		end
     elseif station.name == 'train-stop-supplier' and train_data.supplier ~= nil then
         train_data.location = "supplier"
+		if train_data.supplier.warning_timeout_enable_disable then
+			local tick = game.tick + (train_data.supplier.warning_timeout * 60)
+			train_data.supplier.tick_alarm = tick
+			utils.add_to_list_of_lists(global.conductor.tick_alarms, tick, train_data.supplier.unit_number)
+		end
     end
 
 	if DEBUG_MODE  then
@@ -146,12 +157,18 @@ function on_train_leaves(event)
 
         if train_data.location == "consumer" then
             if train_data.consumer ~= nil then
+				if train_data.consumer.tick_alarm then
+					utils.remove_from_list_of_lists(global.conductor.tick_alarms, train_data.consumer.tick_alarm, train_data.consumer.unit_number)
+				end
                 train_data.consumer.assigned_trains = train_data.consumer.assigned_trains - 1
                 utils.remove_from_list(train_data.consumer.trains, train.id)
                 train_data.consumer = nil
             end
         elseif train_data.location == "supplier" then
             if train_data.supplier ~= nil then
+				if train_data.supplier.tick_alarm then
+					utils.remove_from_list_of_lists(global.conductor.tick_alarms, train_data.supplier.tick_alarm, train_data.supplier.unit_number)
+				end
                 train_data.supplier.assigned_trains = train_data.supplier.assigned_trains - 1
                 utils.remove_from_list(train_data.supplier.trains, train.id)
                 train_data.supplier = nil
@@ -484,6 +501,33 @@ function Conductor:create_schedule(depot_name, supplier, consumer)
 		rail = supplier.entity.connected_rail,
         wait_conditions = {{type = "full", compare_type = "and"}}
     }
+	
+	if consumer.count_enable_disable == true and consumer.count then
+		schedule.records[2].wait_conditions = 
+		{ 
+			{
+				type = "item_count", 
+				compare_type = 'or',
+				condition = {
+					comparator = '≥',
+					first_signal = {
+						type = consumer.resource_type,
+						name = consumer.resource
+					},
+					constant = consumer.count
+				}
+			}
+		}
+	end
+
+	if supplier.timeout_enable_disable == true and supplier.timeout then
+		table.insert(schedule.records[2].wait_conditions, {
+			type = "time",
+			ticks = supplier.timeout * 60,
+			compare_type = 'or'
+		})
+	end
+
     -- to consumer
     schedule.records[3] = {
         --station = consumer.name,
@@ -491,6 +535,15 @@ function Conductor:create_schedule(depot_name, supplier, consumer)
 		rail = consumer.entity.connected_rail,
         wait_conditions = {{type = "empty", compare_type = "and"}}
     }
+	
+	if consumer.timeout_enable_disable == true and consumer.timeout then
+		table.insert(schedule.records[3].wait_conditions, {
+			type = "time",
+			ticks = consumer.timeout * 60,
+			compare_type = 'or'
+		})
+	end
+
     return schedule
 end
 
@@ -585,6 +638,20 @@ end)
 
 script.on_nth_tick(3600, function()
     Conductor:cleanup()
+end)
+
+script.on_event(defines.events.on_tick, function(event)
+	if global.conductor.tick_alarms[game.tick] then
+		for _, unit_number in pairs(global.conductor.tick_alarms[game.tick]) do
+			local train_stop = global.conductor.train_stops[unit_number]
+
+			if train_stop and train_stop.warning_timeout_enable_disable and train_stop.warning_timeout and train_stop.entity.valid then
+				local time_in_seconds = train_stop.warning_timeout
+				game.print('Warning, a train has been waiting at station [' .. train_stop.name  ..']  for ' .. time_in_seconds .. ' seconds')
+			end
+		end
+		global.conductor.tick_alarms[game.tick] = nil
+	end
 end)
 
 commands.add_command('st_cleanup', '', function()

@@ -1,4 +1,5 @@
 local function update_value(player_index, name, value)
+	if not global.gui[player_index] then return end
     local train_stop = global.gui[player_index].train_stop.train_stop
 
     if name == "resource" then
@@ -28,6 +29,13 @@ local function text_changed(event)
     update_value(event.player_index, name, value)
 end
 
+local function on_gui_enable_disable_checked_state(event)
+    local name = string.match(event.element.name, "(.*)%-enable%-disable%-checkbox")
+    local value = (event.element.state == true) and true or false
+
+	update_value(event.player_index, name .. "_enable_disable", value)
+end
+
 local function on_gui_checked_state(event)
     local name = string.match(event.element.name, "(.*)-checkbox")
     local value = (event.element.state == true) and true or false
@@ -39,6 +47,13 @@ local function on_gui_elem_changed(event)
     local name = string.match(event.element.name, "(.*)-element")
 
     update_value(event.player_index, name, event.element.elem_value)
+end
+
+local function on_gui_value_changed(event)
+	local name = string.match(event.element.name, "(.*)%-slider")
+    local value = event.element.slider_value
+
+	update_value(event.player_index, name, value)
 end
 
 local function destroy(player_index)
@@ -96,13 +111,12 @@ local function build(player_index)
     local fields = {}
     local labels = {}
     for name, data in pairs(config) do
-		logger('data: ' .. serpent.line(data))
 		local field_enabled
 
 		if data.enable_disable == true then
 			field_enabled  = table.add {
 				type = "checkbox",
-				name = name .. "-field-enabled-checkbox",
+				name = name .. "-enable-disable-checkbox",
 				state = false
 			}
 		else
@@ -198,10 +212,17 @@ local function update(player_index, train_stop)
 			else
 				gui.fields[name].elem_value = nil
 			end
+		elseif data.type == 'slider' then
+			if train_stop[name] then
+				gui.fields[name].slider_value = train_stop[name]
+			end
+		end
+
+		if data.enable_disable then
+			gui.enable_disable[name].state = train_stop[name .. '_enable_disable'] or false
 		end
 
 		local visible = data.exclude == nil or not data.exclude:has(train_stop.type) or false
-		logger('wat' .. serpent.line(gui.enable_disable))
 		gui.enable_disable[name].visible = visible
 		gui.labels[name].visible = visible
 		gui.fields[name].visible = visible
@@ -242,13 +263,18 @@ local function train_stop_map_events()
 		hide(event.player_index)
 	end
 
-	for name, data in pairs(config) do
+	for name, data in pairs(config) do		
+		if data.enable_disable then
+			events.map_gui_checked_state[name .. "-enable-disable-checkbox"] = on_gui_enable_disable_checked_state
+		end
 		if data.type == "text" then
 			events.map_text_changed[name .. "-text"] = text_changed
 		elseif data.type == "checkbox" then
 			events.map_gui_checked_state[name .. "-checkbox"] = on_gui_checked_state
 		elseif data.type == "element" then
 			events.map_gui_elem_changed[name .. "-element"] = on_gui_elem_changed
+		elseif data.type == 'slider' then
+			events.map_gui_value_changed[name .. '-slider'] = on_gui_value_changed
 		end
 	end
 end

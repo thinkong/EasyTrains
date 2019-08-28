@@ -204,6 +204,10 @@ function Tracker.remove_stop(unit_number, name, type)
 		Tracker.remove_data_entity(train_stop)
 		global.conductor.need_to_refresh = true
 
+		if train_stop.tick_alarm then
+			utils.remove_from_list_of_lists(global.conductor.tick_alarms, train_stop.tick_alarm, unit_number)
+		end
+
         if type == 'depot' then
             table.remove(global.conductor.depots, unit_number)
         elseif type == 'consumer' then

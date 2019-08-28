@@ -38,6 +38,14 @@ local config = {
         default = 6,
         tooltip = {"samtrain.max_length_tooltip"}
     },
+	["count"] = {
+		short_name = "c",
+		type = "text",
+		default = nil,
+		tooltip = {"samtrain.count_tooltip"},
+		exclude = {"depot", "supplier"},
+		enable_disable = true
+	},
 	["timeout"] = {
 		short_name = "to",
 		type = "slider",
@@ -50,11 +58,16 @@ local config = {
 			maximum_value = 120,
 		}
 	},
-	["count"] = {
-		type = "text",
-		default = nil,
-		exclude = {"depot", "supplier"},
-		enable_disable = true
+	["warning_timeout"] = {
+		short_name = "wto",
+		type = "slider",
+		default = 120,
+		tooltip = {"samtrain.warning_timeout_toolip"},
+		enable_disable = true,
+		options = {
+			minimum_value = 1,
+			maximum_value = 600
+		}
 	}
 }
 

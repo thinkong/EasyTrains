@@ -3,7 +3,7 @@ global = global or {}
 global.gui = global.gui or {}
 
 utils = require 'utils'
-logger = require('__stdlib__/stdlib/misc/logger').new('log', false)
+logger = require('__stdlib__/stdlib/misc/logger').new('log', true)
 table = require('__stdlib__/stdlib/utils/table')
 RoundRobin = require "classes.RoundRobin"
 Tracker = require "classes.Tracker"
@@ -225,12 +225,16 @@ script.on_event(
             local dest_train_stop = global.conductor.train_stops[event.destination.unit_number]
 
             if source_train_stop and dest_train_stop then
-                dest_train_stop.resource = source_train_stop.resource
-                dest_train_stop.resource_type = source_train_stop.resource_type
-                dest_train_stop.priority = source_train_stop.priority
-                dest_train_stop.max_number_of_trains = source_train_stop.max_number_of_trains
-                dest_train_stop.min_length = source_train_stop.min_length
-                dest_train_stop.max_length = source_train_stop.max_length
+				for configName, configData in pairs(config) do
+					if configName ~= "enabled" then
+						dest_train_stop[configName] = source_train_stop[configName]
+						if configData.enable_disable then
+							local configNameEnableDisable = configName .. "_enable_disable"
+							dest_train_stop[configNameEnableDisable] = source_train_stop[configNameEnableDisable]
+						end
+					end
+				end
+
             end
         end
     end

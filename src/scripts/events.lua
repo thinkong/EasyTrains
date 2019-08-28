@@ -6,6 +6,7 @@ events = {
     map_text_changed = {},
     map_gui_elem_changed = {},
     map_gui_checked_state = {},
+	map_gui_value_changed = {},
 	map_player_created = {},
 	map_player_joined_game = {},
 	map_train_changed_state = {}
@@ -63,6 +64,13 @@ events.on_gui_elem_changed = function(event)
     events.map_gui_elem_changed[event.element.name](event)
 end
 
+events.on_gui_value_changed = function(event)
+    if not event.element or not events.map_gui_value_changed[event.element.name] then
+        return
+    end
+    events.map_gui_value_changed[event.element.name](event)
+end
+
 events.on_gui_checked_state = function(event)
     if not event.element or not events.map_gui_checked_state[event.element.name] then
         return
@@ -102,6 +110,7 @@ script.on_event({defines.events.on_gui_click}, events.on_gui_clicked)
 script.on_event({defines.events.on_gui_text_changed}, events.on_gui_text_changed)
 script.on_event({defines.events.on_gui_elem_changed}, events.on_gui_elem_changed)
 script.on_event({defines.events.on_gui_checked_state_changed}, events.on_gui_checked_state)
+script.on_event({defines.events.on_gui_value_changed}, events.on_gui_value_changed)
 script.on_event({defines.events.on_player_created}, events.on_player_created)
 script.on_event({defines.events.on_player_joined_game}, events.on_player_joined_game)
 script.on_event({defines.events.on_train_changed_state}, events.on_train_changed_state)
