@@ -19,7 +19,7 @@ void Main()
 
 	string outputFilename = $"{info.Name}_{info.Version}";
 	using (var fs = new FileStream(Path.Combine(path, outputFilename + ".zip"), FileMode.OpenOrCreate, FileAccess.Write))
-	using ( var zip = new ZipArchive(fs, ZipArchiveMode.Create))
+	using ( var zip = new ZipArchive(fs, ZipArchiveMode.Create, false, new MyEncoder()))
 	{
 		//var entry = zip.CreateEntry(outputFilename + "/");
 		
