@@ -233,6 +233,7 @@ script.on_event(
             local dest_train_stop = global.conductor.train_stops[event.destination.unit_number]
 
             if source_train_stop and dest_train_stop then
+				dest_train_stop.resource_type = source_train_stop.resource_type
 				for configName, configData in pairs(config) do
 					if configName ~= "enabled" then
 						dest_train_stop[configName] = source_train_stop[configName]
