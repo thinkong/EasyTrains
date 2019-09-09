@@ -194,7 +194,7 @@ function Conductor:build_consumers()
 			local resource_type = train_stop.resource_type
 			local resource = train_stop.resource
 
-			if not resource then goto continue end
+			if not resource_type or not resource then goto continue end
 			if not t[resource_type] then t[resource_type] = {} end
 			if not t[resource_type][resource] then t[resource_type][resource] = {} end
 
