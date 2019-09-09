@@ -31,7 +31,7 @@ function get_resource_for_train_stop(train_stop)
 	if entity.circuit_connected_entities then
 		if entity.circuit_connected_entities.red then
 			local circuit_network = entity.get_circuit_network(defines.wire_type.red)
-			if circuit_network then
+			if circuit_network and circuit_network.signals then
 				for _, signal in pairs(circuit_network.signals) do
 					table.insert(signals, signal)
 				end
@@ -40,7 +40,7 @@ function get_resource_for_train_stop(train_stop)
 
 		if entity.circuit_connected_entities.green then
 			local circuit_network = entity.get_circuit_network(defines.wire_type.green)
-			if circuit_network then
+			if circuit_network and circuit_network.signals then
 				for _, signal in pairs(circuit_network.signals) do
 					table.insert(signals, signal)
 				end
