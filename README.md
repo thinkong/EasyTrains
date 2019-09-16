@@ -15,6 +15,15 @@ A simple, easy-to-use, no circuits required train scheduler for people who just 
 
 ---
 ### Change log
+**0.18**
+- Fix crash when disabling train stop using circuits.
+- Fix crash if resource and not resource_type (this shouldn't be possible)
+- Fix resource_type not copied when pasting settings
+- Fix warnings not using locale
+- Fix tooltip not working
+- Track ghost data entities properly and destroy them when not needed. Force revive ghost data entity so materials aren't required.
+- Fix ghost data entity not deleted if ghost train stop is deleted.
+
 **0.17**
 - Update the icon and entity graphics. These are still temporary graphics, just slightly better.
 - Reorder the train stop icons to be depot, supplier, consumer
