@@ -55,6 +55,23 @@ local function get_existing_data_entity(parent_entity)
   return nil
 end
 
+local function get_data_entity_ghost(parent_entity)
+  local entities = parent_entity.surface.find_entities_filtered({
+    position = parent_entity.position,
+	radius = 1,
+	name = 'entity-ghost',
+    ghost_name = 'st-data-entity'
+  })
+
+  for _, matching_entity in pairs(entities) do
+    if matching_entity ~= parent_entity then
+      return matching_entity
+    end
+  end
+
+  return nil
+end
+
 local function get_existing_train_stop(parent_entity)
   local entities = parent_entity.surface.find_entities_filtered({
     position = parent_entity.position,
@@ -70,14 +87,67 @@ local function get_existing_train_stop(parent_entity)
   return nil
 end
 
+
+local function get_train_stop_ghost(parent_entity)
+  local entities = parent_entity.surface.find_entities_filtered({
+    position = parent_entity.position,
+	name = 'entity-ghost',
+    ghost_name = {'train-stop-depot', 'train-stop-supplier', 'train-stop-consumer'}
+  })
+
+  for _, matching_entity in pairs(entities) do
+    if matching_entity ~= parent_entity then
+      return matching_entity
+    end
+  end
+
+  return nil
+end
+
+function Tracker.fix_data_entity_ghost(ghost_data_entity)
+	local other_ghost_data_entity = get_data_entity_ghost(ghost_data_entity)
+
+	if other_ghost_data_entity then
+		ghost_data_entity.destroy()
+		return
+	end
+
+	local data_entity = get_existing_data_entity(ghost_data_entity)
+	local train_stop_entity = get_existing_train_stop(ghost_data_entity)
+	local train_stop_entity_ghost = get_train_stop_ghost(ghost_data_entity)
+
+	if data_entity then
+		local train_stop = global.conductor.train_stops[train_stop_entity.unit_number]
+		if train_stop then
+			decode(ghost_data_entity, train_stop)
+			Tracker.update_data_entity(train_stop)
+		end
+
+		ghost_data_entity.destroy()
+	elseif not train_stop_entity and not train_stop_entity_ghost then
+		ghost_data_entity.destroy()
+	end
+end
+
 function Tracker.add_data_entity(entity)
 	local data_entity = get_existing_data_entity(entity)
+	local ghost_data_entity = get_data_entity_ghost(entity)
+
+	if ghost_data_entity then
+		local success, revived, proxy = ghost_data_entity.revive {
+			raise_revive = true,
+			return_item_request_proxy = true
+		}
+		data_entity = revived
+	end
+
 	local train_stop
-
 	if entity.name == 'train-stop-depot' or entity.name == 'train-stop-supplier' or entity.name == 'train-stop-consumer' then
-
 		if data_entity then
-			Tracker.update_train_stop(existing_data_entity, entity)
+			train_stop = global.conductor.train_stops[entity.unit_number]
+			train_stop.data_entity = data_entity
+
+			Tracker.update_train_stop(data_entity, train_stop)
 		else
 			data_entity = entity.surface.create_entity({
 				name = 'st-data-entity',
@@ -85,7 +155,6 @@ function Tracker.add_data_entity(entity)
 				direction = entity.direction,
 				force = entity.force
 			})
-			data_entity.destructible = false
 
 			train_stop = global.conductor.train_stops[entity.unit_number]
 			train_stop.data_entity = data_entity
@@ -103,12 +172,15 @@ function Tracker.add_data_entity(entity)
 
 			Tracker.update_train_stop(entity, train_stop)
 			train_stop.data_entity = entity
+		elseif not get_train_stop_ghost(entity) then
+			entity.destroy()
 		end
 	end
 
 	if train_stop then
 		Tracker.update_data_entity(train_stop)
 	end
+
 	return entity
 end
 
@@ -190,18 +262,18 @@ function Tracker.update_train_stop(data_entity, train_stop)
 	decode(data_entity, train_stop)
 end
 
-function Tracker.remove_data_entity(stop)
-	if not stop.data_entity then return end
-	
-	stop.data_entity.destroy()
-	stop.data_entity = nil
+function Tracker.remove_data_entity(data_entity)
+	data_entity.destroy()
+	data_entity = nil
 end
 
 function Tracker.remove_stop(unit_number, name, type)
     local train_stop = global.conductor.train_stops[unit_number]
     if train_stop ~= nil then
         global.conductor.train_stops[unit_number] = nil
-		Tracker.remove_data_entity(train_stop)
+		if train_stop.data_entity then
+			Tracker.remove_data_entity(train_stop.data_entity)
+		end
 		global.conductor.need_to_refresh = true
 
 		if train_stop.tick_alarm then

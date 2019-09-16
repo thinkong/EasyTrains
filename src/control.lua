@@ -57,7 +57,9 @@ script.on_event(
         local entity = event.created_entity or event.entity
         local train_stop_type = string.match(entity.name, 'train%-stop%-(.*)')
 
-        if entity.name == 'train-stop' or train_stop_type ~= nil then
+		if entity.name == 'entity-ghost' and entity.ghost_name == 'st-data-entity' then
+			Tracker.fix_data_entity_ghost(entity)
+		elseif entity.name == 'train-stop' or train_stop_type ~= nil then
             Tracker.add_stop(entity)
 		elseif entity.name == 'st-data-entity' then
 			Tracker.add_data_entity(entity)
@@ -79,7 +81,11 @@ script.on_event(
             Tracker.remove_stop(entity.unit_number, entity.backer_name, train_stop_type)
         end
 
-        if entity.train then
+		if entity.name == 'st-data-entity' then
+			Tracker.remove_data_entity(entity)
+		end
+
+        if entity.valid and entity.train then
             Tracker.remove_train(entity.train)
         end
     end
