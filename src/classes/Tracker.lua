@@ -104,6 +104,24 @@ local function get_train_stop_ghost(parent_entity)
   return nil
 end
 
+function Tracker.remove_data_entity_ghost_when_train_stop_ghost_is_removed(train_stop_entity)
+	local train_stop_type = string.match(train_stop_entity.ghost_name, 'train%-stop%-(.*)')
+    if train_stop_type ~= nil then
+		local entities = train_stop_entity.surface.find_entities_filtered({
+			position = train_stop_entity.position,
+			radius = 1,
+			name = 'entity-ghost',
+			ghost_name = 'st-data-entity'
+		})
+
+		for _, matching_entity in pairs(entities) do
+			if matching_entity.valid then
+				matching_entity.destroy()
+			end
+		end
+    end
+end
+
 function Tracker.fix_data_entity_ghost(ghost_data_entity)
 	local other_ghost_data_entity = get_data_entity_ghost(ghost_data_entity)
 

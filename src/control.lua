@@ -77,11 +77,15 @@ script.on_event(
     function(event)
         local entity = event.entity
         local train_stop_type = string.match(entity.name, 'train%-stop%-(.*)')
-        if entity.name == 'train-stop' or train_stop_type ~= nil then
-            Tracker.remove_stop(entity.unit_number, entity.backer_name, train_stop_type)
-        end
 
-		if entity.name == 'st-data-entity' then
+		if entity.name == 'entity-ghost' then
+			local train_stop_type = string.match(entity.ghost_name, 'train%-stop%-(.*)')
+			if train_stop_type ~= nil then
+				Tracker.remove_data_entity_ghost_when_train_stop_ghost_is_removed(entity)
+			end
+        elseif entity.name == 'train-stop' or train_stop_type ~= nil then
+            Tracker.remove_stop(entity.unit_number, entity.backer_name, train_stop_type)
+        elseif entity.name == 'st-data-entity' then
 			Tracker.remove_data_entity(entity)
 		end
 
@@ -90,6 +94,17 @@ script.on_event(
         end
     end
 )
+
+script.on_event({
+	defines.events.on_pre_ghost_deconstructed
+}, function(event)
+	local ghost = event.ghost
+
+	local train_stop_type = string.match(ghost.ghost_name, 'train%-stop%-(.*)')
+    if train_stop_type ~= nil then
+		Tracker.remove_data_entity_ghost_when_train_stop_ghost_is_removed(ghost)
+    end
+end)
 
 script.on_event(
     {defines.events.on_train_created},
