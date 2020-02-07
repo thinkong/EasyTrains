@@ -99,11 +99,12 @@ script.on_event({
 	defines.events.on_pre_ghost_deconstructed
 }, function(event)
 	local ghost = event.ghost
-
-	local train_stop_type = string.match(ghost.ghost_name, 'train%-stop%-(.*)')
-    if train_stop_type ~= nil then
-		Tracker.remove_data_entity_ghost_when_train_stop_ghost_is_removed(ghost)
-    end
+	if ghost.type == "entity-ghost" then
+		local train_stop_type = string.match(ghost.ghost_name, 'train%-stop%-(.*)')
+		if train_stop_type ~= nil then
+			Tracker.remove_data_entity_ghost_when_train_stop_ghost_is_removed(ghost)
+		end
+	end
 end)
 
 script.on_event(

@@ -1,20 +1,18 @@
 local depot = clone("train-stop", "train-stop", "train-stop-depot")
-depot.icon = "__SamTrain__/graphics/icons/train-stop-depot.png"
+depot.icon = "__EasyTrains__/graphics/icons/train-stop-depot.png"
 depot.fast_replaceable_group = "train-stop"
 
 depot.animations = make_4way_animation_from_spritesheet({ layers =
 {
     {
-    filename = "__SamTrain__/graphics/entity/train-stop-bottom-depot.png",
-    line_length = 4,
+    filename = "__EasyTrains__/graphics/entity/train-stop-bottom-depot.png",
     width = 71,
     height = 146,
     direction_count = 4,
     shift = util.by_pixel(-0.5, -27),
         hr_version =
         {
-        filename = "__SamTrain__/graphics/entity/hr-train-stop-bottom-depot.png",
-        line_length = 4,
+        filename = "__EasyTrains__/graphics/entity/hr-train-stop-bottom-depot.png",
         width = 140,
         height = 291,
         direction_count = 4,
@@ -24,7 +22,6 @@ depot.animations = make_4way_animation_from_spritesheet({ layers =
     },
     {
     filename = "__base__/graphics/entity/train-stop/train-stop-shadow.png",
-    line_length = 4,
     width = 361,
     height = 304,
     direction_count = 4,
@@ -33,7 +30,6 @@ depot.animations = make_4way_animation_from_spritesheet({ layers =
         hr_version =
         {
         filename = "__base__/graphics/entity/train-stop/hr-train-stop-shadow.png",
-        line_length = 4,
         width = 720,
         height = 607,
         direction_count = 4,
@@ -45,22 +41,20 @@ depot.animations = make_4way_animation_from_spritesheet({ layers =
 }})
 
 local supplier = clone("train-stop", "train-stop", "train-stop-supplier")
-supplier.icon = "__SamTrain__/graphics/icons/train-stop-supplier.png"
+supplier.icon = "__EasyTrains__/graphics/icons/train-stop-supplier.png"
 supplier.fast_replaceable_group = "train-stop"
 
 supplier.animations = make_4way_animation_from_spritesheet({ layers =
 {
     {
-    filename = "__SamTrain__/graphics/entity/train-stop-bottom-supplier.png",
-    line_length = 4,
+    filename = "__EasyTrains__/graphics/entity/train-stop-bottom-supplier.png",
     width = 71,
     height = 146,
     direction_count = 4,
     shift = util.by_pixel(-0.5, -27),
         hr_version =
         {
-        filename = "__SamTrain__/graphics/entity/hr-train-stop-bottom-supplier.png",
-        line_length = 4,
+        filename = "__EasyTrains__/graphics/entity/hr-train-stop-bottom-supplier.png",
         width = 140,
         height = 291,
         direction_count = 4,
@@ -70,7 +64,6 @@ supplier.animations = make_4way_animation_from_spritesheet({ layers =
     },
     {
     filename = "__base__/graphics/entity/train-stop/train-stop-shadow.png",
-    line_length = 4,
     width = 361,
     height = 304,
     direction_count = 4,
@@ -79,7 +72,6 @@ supplier.animations = make_4way_animation_from_spritesheet({ layers =
         hr_version =
         {
         filename = "__base__/graphics/entity/train-stop/hr-train-stop-shadow.png",
-        line_length = 4,
         width = 720,
         height = 607,
         direction_count = 4,
@@ -92,21 +84,19 @@ supplier.animations = make_4way_animation_from_spritesheet({ layers =
 
 
 local consumer = clone("train-stop", "train-stop", "train-stop-consumer")
-consumer.icon = "__SamTrain__/graphics/icons/train-stop-consumer.png"
+consumer.icon = "__EasyTrains__/graphics/icons/train-stop-consumer.png"
 consumer.fast_replaceable_group = "train-stop"
 consumer.animations = make_4way_animation_from_spritesheet({ layers =
 {
     {
-    filename = "__SamTrain__/graphics/entity/train-stop-bottom-consumer.png",
-    line_length = 4,
+    filename = "__EasyTrains__/graphics/entity/train-stop-bottom-consumer.png",
     width = 71,
     height = 146,
     direction_count = 4,
     shift = util.by_pixel(-0.5, -27),
         hr_version =
         {
-        filename = "__SamTrain__/graphics/entity/hr-train-stop-bottom-consumer.png",
-        line_length = 4,
+        filename = "__EasyTrains__/graphics/entity/hr-train-stop-bottom-consumer.png",
         width = 140,
         height = 291,
         direction_count = 4,
@@ -116,7 +106,6 @@ consumer.animations = make_4way_animation_from_spritesheet({ layers =
     },
     {
     filename = "__base__/graphics/entity/train-stop/train-stop-shadow.png",
-    line_length = 4,
     width = 361,
     height = 304,
     direction_count = 4,
@@ -125,7 +114,6 @@ consumer.animations = make_4way_animation_from_spritesheet({ layers =
         hr_version =
         {
         filename = "__base__/graphics/entity/train-stop/hr-train-stop-shadow.png",
-        line_length = 4,
         width = 720,
         height = 607,
         direction_count = 4,
@@ -139,7 +127,7 @@ consumer.animations = make_4way_animation_from_spritesheet({ layers =
 local st_data_entity = clone('programmable-speaker', 'programmable-speaker', 'st-data-entity')
 st_data_entity.minable = { hardness = 0, mining_time = 0, result = 'st-data-entity' }
 st_data_entity.max_health = 3
-st_data_entity.icon = "__SamTrain__/graphics/icons/data-entity.png"
+st_data_entity.icon = "__EasyTrains__/graphics/icons/data-entity.png"
 st_data_entity.item_slot_count = 100
 st_data_entity.selectable_in_game = false
 st_data_entity.collision_mask = {"not-colliding-with-itself"}

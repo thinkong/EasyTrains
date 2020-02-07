@@ -1,5 +1,8 @@
-# Sam's Trains
+# Easy Trains
 A simple, easy-to-use, no circuits required train scheduler for people who just want their trains to work. 
+Originally [Sam's Train](https://mods.factorio.com/mod/SamTrain) but the original author(kiasyn) seemed to have abandoned it. I forked the source and rebranded it adding [SamTrainsV18](https://mods.factorio.com/mod/SamTrain_v18) which is a 0.18 fix by bMac59 into the source.
+It should be compatible with the original SamTrainv18.
+I have kept the tech name and icons from the original. Please contact me if you wish to have this mod or any part of this mod to be removed.
 
 **Adds 3 different train stops to the game:**
 *Depot*: a place for your trains to fuel and wait for their next task
@@ -18,6 +21,7 @@ A simple, easy-to-use, no circuits required train scheduler for people who just 
  - Create a Train Stop Consumer. Specify the resource it wants and enable it.
  - Create a Train Stop Supplier. Specify the resource it has and enable it.
  - Your trains should now automatically be dispatched from your depot to your supplier, then to your consumer, then back to the depot.
+ - In the case of emergency try using `/et_cleanup` in the console.
 
 ---
 
@@ -55,6 +59,7 @@ A simple, easy-to-use, no circuits required train scheduler for people who just 
  
 ---
 ### Future
+#### Below is a list that the original author made.. I have no idea if I will ever implement anything
  - Grouping train stops - making trains only be used within their groups, so they won't be sent across the map for a task.
  -  Add warning if train has been waiting at depot for fuel for 2 mins
  -  Add warning if train has been waiting at supplier for configurable timer

@@ -654,7 +654,7 @@ script.on_event(defines.events.on_tick, function(event)
 	end
 end)
 
-commands.add_command('st_cleanup', '', function()
+commands.add_command('et_cleanup', '', function()
 	Conductor:cleanup()
 end)
 

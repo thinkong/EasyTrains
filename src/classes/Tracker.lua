@@ -122,6 +122,11 @@ function Tracker.remove_data_entity_ghost_when_train_stop_ghost_is_removed(train
     end
 end
 
+function Tracker.Trace( message)
+	game.write_file("SamTrain.Log", message, true)
+	game.write_file("SamTrain.Log", "\n", true)
+end
+
 function Tracker.fix_data_entity_ghost(ghost_data_entity)
 	local other_ghost_data_entity = get_data_entity_ghost(ghost_data_entity)
 
@@ -164,7 +169,6 @@ function Tracker.add_data_entity(entity)
 		if data_entity then
 			train_stop = global.conductor.train_stops[entity.unit_number]
 			train_stop.data_entity = data_entity
-
 			Tracker.update_train_stop(data_entity, train_stop)
 		else
 			data_entity = entity.surface.create_entity({
@@ -173,9 +177,14 @@ function Tracker.add_data_entity(entity)
 				direction = entity.direction,
 				force = entity.force
 			})
-
+			
 			train_stop = global.conductor.train_stops[entity.unit_number]
-			train_stop.data_entity = data_entity
+			if train_stop == nil then
+				train_stop = Tracker.add_stop( entity)
+			end 
+			if train_stop then
+				train_stop.data_entity = data_entity
+			end
 		end
 	elseif entity.name == 'st-data-entity' then
 		local train_stop_entity = get_existing_train_stop(entity)
@@ -198,7 +207,6 @@ function Tracker.add_data_entity(entity)
 	if train_stop then
 		Tracker.update_data_entity(train_stop)
 	end
-
 	return entity
 end
 
