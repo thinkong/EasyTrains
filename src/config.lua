@@ -72,9 +72,10 @@ local config = {
 	}
 }
 
+local string_array_metatable = getmetatable(string_array({}))
 for name, data in pairs(config) do
     if data.exclude ~= nil then
-        setmetatable(data.exclude, string_array)
+        setmetatable(data.exclude, string_array_metatable)
     end
 end
 
