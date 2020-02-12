@@ -71,7 +71,7 @@ local function build(player_index)
 
     local main_frame = parent.add {
         type = "flow",
-        name = "st-window-train-stop",
+        name = "et-window-train-stop",
         direction = "horizontal"
     }
 

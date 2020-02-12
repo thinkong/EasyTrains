@@ -46,7 +46,7 @@ local function build_trains_tab_content(tbl_trains)
         local label_mission =
             tbl_trains.add {
             type = "label",
-			name = "st-train-label-" .. train.id,
+			name = "et-train-label-" .. train.id,
             caption = (train.mission or "")
         }
 		label_mission.style.horizontally_stretchable = true
@@ -151,7 +151,7 @@ local function build_train_stop_tab_content(tbl, train_stop_type)
 
             tbl.add {
                 type = "label",
-				name = "st-train-stop-label-" .. train_stop.unit_number,
+				name = "et-train-stop-label-" .. train_stop.unit_number,
                 caption = "[train-stop=" .. train_stop.unit_number .. "] " .. train_stop.name,
             }
 
@@ -238,7 +238,7 @@ local function build(player_index)
     local parent = game.players[player_index].gui.center
     local tabbed_pane = parent.add {
         type = "tabbed-pane",
-		name = "st-window-overview"
+		name = "et-window-overview"
     }
     tabbed_pane.style.minimal_width = 750
 
@@ -315,25 +315,25 @@ local function show_train_stop(event, match)
 end
 
 local function overview_map_events()
-	events.map_gui_closed["st-window-overview"] = close_overview
-	events.map_gui_click["st-button-showoverview"] = toggle_overview
-	events.map_gui_click_match["st%-train%-label%-(%d+)"] = show_train
-	events.map_gui_click_match["st%-train%-stop%-label%-(%d+)"] = show_train_stop
+	events.map_gui_closed["et-window-overview"] = close_overview
+	events.map_gui_click["et-button-showoverview"] = toggle_overview
+	events.map_gui_click_match["et%-train%-label%-(%d+)"] = show_train
+	events.map_gui_click_match["et%-train%-stop%-label%-(%d+)"] = show_train_stop
 end
 
 local function add_button(player_index)
 	local player = game.players[player_index]
 
 	local button_flow = mod_gui.get_button_flow(player)
-	if button_flow["st-button-showoverview"] then
-		button_flow["st-button-showoverview"].destroy()
+	if button_flow["et-button-showoverview"] then
+		button_flow["et-button-showoverview"].destroy()
 	end
 
 	button_flow.add {
 		type = "button",
 		style = mod_gui.button_style,
 		caption = "[item=train-stop] Sam's Trains",
-		name = "st-button-showoverview"
+		name = "et-button-showoverview"
 	}
 end	
 

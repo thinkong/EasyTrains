@@ -103,8 +103,13 @@ function on_train_arrives(event)
         )
 
         local schedule = {current = 1, records = {}}
-        schedule.records[1] = {station = station.backer_name}
-        train.schedule = schedule
+		schedule.records[1] = {
+			station = station.backer_name, 
+			wait_conditions={
+				{type = "inactivity", ticks = 180, compare_type = "and"} -- wait for the train to be inactive... hopefully fueling
+			}
+		}        
+		train.schedule = schedule
 
         if train_data.mission ~= nil then
             logger(string.format("Train mission %s has completed", train_data.mission))
@@ -325,7 +330,7 @@ function Conductor:build_train_list()
 			
 				if not actual_train.valid then goto continue end
 				if actual_train.manual_mode then goto continue end
-				if not self:fully_fueled(actual_train) then goto continue end
+				-- if not self:fully_fueled(actual_train) then goto continue end
 
 				local contents = actual_train.get_contents()
 				local table_size_contents = table_size(contents)
@@ -491,16 +496,21 @@ function Conductor:create_schedule(depot_name, supplier, consumer)
     schedule.records[1] = {
         station = depot_name,
         wait_conditions = {
-            {type = "full", compare_type = "and"} -- just to force the train to wait there indefinitely
+			{type = "inactivity", ticks = 180, compare_type = "and"}	-- make sure the train is fully fueled
         }
     }
-    -- to supplier
-    schedule.records[2] = {
-        --station = supplier.name,
-		-- if we use rail instead of station we don't require unique names
-		rail = supplier.entity.connected_rail,
-        wait_conditions = {{type = "full", compare_type = "and"}}
-    }
+	-- to supplier
+	if settings.global["duplicate_station_names"] == true then
+		schedule.records[2] = {
+			rail = supplier.entity.connected_rail,
+			wait_conditions = {{type = "full", compare_type = "and"}}
+		}
+	else
+		schedule.records[2] = {
+		station = supplier.name,
+		wait_conditions = {{type = "full", compare_type = "and"}}
+	}
+	end
 	
 	if consumer.count_enable_disable == true and consumer.count then
 		schedule.records[2].wait_conditions = 
@@ -529,12 +539,17 @@ function Conductor:create_schedule(depot_name, supplier, consumer)
 	end
 
     -- to consumer
-    schedule.records[3] = {
-        --station = consumer.name,
-		-- if we use rail instead of station we don't require unique names
-		rail = consumer.entity.connected_rail,
-        wait_conditions = {{type = "empty", compare_type = "and"}}
-    }
+	if settings.global["duplicate_station_names"]  == true then
+		schedule.records[3] = {
+			rail = consumer.entity.connected_rail,
+			wait_conditions = {{type = "empty", compare_type = "and"}}
+		}
+	else		
+		schedule.records[3] = {
+		station = consumer.name,
+		wait_conditions = {{type = "empty", compare_type = "and"}}
+	}
+	end
 	
 	if consumer.timeout_enable_disable == true and consumer.timeout then
 		table.insert(schedule.records[3].wait_conditions, {
@@ -577,11 +592,25 @@ function Conductor:dispatch_train(train, supplier, consumer)
     end
     local schedule = Conductor:create_schedule(train.depot_name, supplier, consumer)
     actual_train.schedule = schedule
-    actual_train.go_to_station(2)
+    --actual_train.go_to_station(2)
     train.mission = string.format("%s to %s", supplier.name, consumer.name)
     logger(string.format(" ... starting train %d for mission %s", train.id, train.mission))
 end
 
+function Conductor:fixstations()
+	for index, train_stop in pairs(global.conductor.train_stops) do
+		if train_stop.name ~= 'train-stop-depot' then
+			if train_stop.enabled == false then
+				logger(serpent.line(train_stop))
+				train_stop.enabled = true
+				-- train_stop.backer_name
+				local _, _, item_type, item_name = train_stop.name:find('%[(.*)=(.*)%] ')
+				train_stop.resource_type = item_type
+				train_stop.resource = item_name
+			end 
+		end
+	end
+end
 
 function Conductor:cleanup()
 	for index, train_stop in pairs(global.conductor.train_stops) do
@@ -656,6 +685,10 @@ end)
 
 commands.add_command('et_cleanup', '', function()
 	Conductor:cleanup()
+end)
+
+commands.add_command('et_fix', '', function()
+	Conductor:fixstations()
 end)
 
 local function conductor_map_events()
