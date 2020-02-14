@@ -1,32 +1,32 @@
 local function build_trains_tab_content(tbl_trains)
     tbl_trains.add {
         type = "label",
-        caption = {"samtrain_overview.type"},
+        caption = {"easytrain_overview.type"},
         style = "caption_label"
     }
 
     tbl_trains.add {
         type = "label",
-		caption = {"samtrain_overview.task"},
+		caption = {"easytrain_overview.task"},
         style = "caption_label"
     }
 
 	local label_depot = tbl_trains.add {
         type = "label",
-		caption = {"samtrain_overview.depot"},
+		caption = {"easytrain_overview.depot"},
         style = "caption_label"
     }
 	label_depot.style.minimal_width = 100
 
     tbl_trains.add {
         type = "label",
-        caption = {"samtrain_overview.resource"},
+        caption = {"easytrain_overview.resource"},
         style = "caption_label"
     }
 
     tbl_trains.add {
         type = "label",
-        caption = {"samtrain_overview.size"},
+        caption = {"easytrain_overview.size"},
         style = "caption_label"
     }
 
@@ -100,41 +100,41 @@ end
 local function build_train_stop_tab_content(tbl, train_stop_type)
     tbl.add {
         type = "label",
-		caption = {"samtrain_overview.enabled"},
+		caption = {"easytrain_overview.enabled"},
         style = "caption_label"
     }
 
     local label_name =
         tbl.add {
         type = "label",
-        caption = {"samtrain_overview.name"},
+        caption = {"easytrain_overview.name"},
         style = "caption_label"
     }
     label_name.style.horizontally_stretchable = true
 
     tbl.add {
         type = "label",
-        caption = {"samtrain_overview.resource"},
+        caption = {"easytrain_overview.resource"},
         style = "caption_label"
     }
 
     tbl.add {
         type = "label",
-        caption = {"samtrain_overview.priority"},
+        caption = {"easytrain_overview.priority"},
         style = "caption_label"
     }
 
     tbl.add {
         type = "label",
-        caption = {"", {"samtrain_overview.trains"}, "", " [img=info]"},
-        tooltip = {"samtrain_overview.trains_tooltip"},
+        caption = {"", {"easytrain_overview.trains"}, "", " [img=info]"},
+        tooltip = {"easytrain_overview.trains_tooltip"},
         style = "caption_label"
     }
 
     tbl.add {
         type = "label",
-        caption = {"", {"samtrain_overview.size"}, "", " [img=info]"},
-        tooltip = {"samtrain_overview.size_tooltip"},
+        caption = {"", {"easytrain_overview.size"}, "", " [img=info]"},
+        tooltip = {"easytrain_overview.size_tooltip"},
         style = "caption_label"
     }
 
@@ -332,7 +332,7 @@ local function add_button(player_index)
 	button_flow.add {
 		type = "button",
 		style = mod_gui.button_style,
-		caption = "[item=train-stop] Sam's Trains",
+		caption = "[item=train-stop] Easy Trains",
 		name = "et-button-showoverview"
 	}
 end	

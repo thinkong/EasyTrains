@@ -125,9 +125,9 @@ local function build(player_index)
 
         local caption
         if data.tooltip ~= nil then
-            caption = {"", {"samtrain." .. name}, "", " [img=info]"}
+            caption = {"", {"easytrain." .. name}, "", " [img=info]"}
         else
-            caption = {"samtrain." .. name}
+            caption = {"easytrain." .. name}
         end
         local label =
             table.add {

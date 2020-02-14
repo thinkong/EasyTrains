@@ -17,32 +17,32 @@ local config = {
         type = "text",
         default = 100,
         exclude = {"depot"},
-        tooltip = {"samtrain.priority_tooltip"}
+        tooltip = {"easytrain.priority_tooltip"}
     },
     ["max_number_of_trains"] = {
 		short_name = "t",
         type = "text",
         default = 1,
         exclude = {"depot"},
-        tooltip = {"samtrain.max_number_of_trains_tooltip"}
+        tooltip = {"easytrain.max_number_of_trains_tooltip"}
     },
     ["min_length"] = {
 		short_name = "min",
         type = "text",
         default = 2,
-        tooltip = {"samtrain.min_length_tooltip"}
+        tooltip = {"easytrain.min_length_tooltip"}
     },
     ["max_length"] = {
 		short_name = "max",
         type = "text",
         default = 6,
-        tooltip = {"samtrain.max_length_tooltip"}
+        tooltip = {"easytrain.max_length_tooltip"}
     },
 	["count"] = {
 		short_name = "c",
 		type = "text",
 		default = nil,
-		tooltip = {"samtrain.count_tooltip"},
+		tooltip = {"easytrain.count_tooltip"},
 		exclude = {"depot", "supplier"},
 		enable_disable = true
 	},
@@ -50,7 +50,7 @@ local config = {
 		short_name = "to",
 		type = "slider",
 		default = 120,
-		tooltip = {"samtrain.timeout_tooltip"},
+		tooltip = {"easytrain.timeout_tooltip"},
 		exclude = {"depot"},
 		enable_disable = true,
 		options = {
@@ -62,7 +62,7 @@ local config = {
 		short_name = "wto",
 		type = "slider",
 		default = 120,
-		tooltip = {"samtrain.warning_timeout_tooltip"},
+		tooltip = {"easytrain.warning_timeout_tooltip"},
 		exclude = {"depot"},
 		enable_disable = true,
 		options = {

@@ -123,8 +123,8 @@ function Tracker.remove_data_entity_ghost_when_train_stop_ghost_is_removed(train
 end
 
 function Tracker.Trace( message)
-	game.write_file("SamTrain.Log", message, true)
-	game.write_file("SamTrain.Log", "\n", true)
+	game.write_file("EasyTrain.Log", message, true)
+	game.write_file("EasyTrain.Log", "\n", true)
 end
 
 function Tracker.fix_data_entity_ghost(ghost_data_entity)
@@ -314,7 +314,7 @@ function Tracker.remove_stop(unit_number, name, type)
             if train_stop.resource then
                 local assigned_trains = train_stop.assigned_trains
                 if assigned_trains > 0 then
-                    game.print({"samtrain.deleted_train_stop_warning", assigned_trains})
+                    game.print({"easytrain.deleted_train_stop_warning", assigned_trains})
                 end
             end
         elseif type == 'supplier' then
@@ -323,7 +323,7 @@ function Tracker.remove_stop(unit_number, name, type)
             if train_stop.resource then
                 local assigned_trains = train_stop.assigned_trains
                 if assigned_trains > 0 then
-                    game.print({"samtrain.deleted_train_stop_warning", assigned_trains})
+                    game.print({"easytrain.deleted_train_stop_warning", assigned_trains})
                 end
             end
         end

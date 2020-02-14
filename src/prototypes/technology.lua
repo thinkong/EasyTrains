@@ -2,7 +2,7 @@ data:extend(
     {
         {
             type = "technology",
-            name = "samtrain",
+            name = "easytrain",
             icon = "__EasyTrains__/thumbnail.png",
             icon_size = 144,
             prerequisites = {"automated-rail-transportation"},

@@ -3,8 +3,8 @@
   "version": "0.18",
   "title": "EasyTrains",
   "author": "thinkong",
-  "contact": "https://github.com/thinkong/SamTrain",
-  "homepage": "https://github.com/thinkong/SamTrain",
+  "contact": "https://github.com/thinkong/EasyTrains",
+  "homepage": "https://github.com/thinkong/EasyTrains",
   "description": "A simple, easy-to-use, no circuits required train scheduler for people who just want their trains to work.",
   "factorio_version": "0.18",
   "dependencies": [ "base >= 0.18", "stdlib >= 1.4.0" ]
